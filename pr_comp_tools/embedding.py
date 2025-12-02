@@ -1,14 +1,16 @@
 from sentence_transformers import SentenceTransformer, util
+import torch
 
 def load_model():
-    return SentenceTransformer('/商品PR生成LLMコンペ_埋め込みモデル/model')
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    return SentenceTransformer('model',device = device)
 
 
 def calc_simil(genSentenceLst, goalSentenceLst):
     if len(genSentenceLst) != len(goalSentenceLst):
         print("Length Failure")
         return
-    embed_model=load_mode()
+    embed_model=load_model()
     maxSimil=[0.0, 0]
     minSimil=[0.0, 0]
     totalSimil=0.0
@@ -19,11 +21,11 @@ def calc_simil(genSentenceLst, goalSentenceLst):
         if simil > maxSimil[0]:
             maxSimil[0]=simil
             maxSimil[1]=i
-        if simil < min_simil[0]:
+        if simil < minSimil[0]:
             minSimil[0]=simil
             minSimil[1]=i
         totalSimil+=simil
-    print(f"AVE SIMILARITY : {totalSImil/len(genSentenceLst)}")
+    print(f"AVE SIMILARITY : {totalSimil/len(genSentenceLst)}")
     print(f"MAX SIMILARITY : {maxSimil[0]}")
     print(f"MAX SIMILARITY GENERATED SENTENCE : {genSentenceLst[maxSimil[1]]}")
     print(f"MAX SIMILARITY TARGET SENTENCE : {goalSentenceLst[maxSimil[1]]}")
